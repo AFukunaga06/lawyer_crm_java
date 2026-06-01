@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head((${client.id} != null ? '編集' : '新規') + ' | ' + ${vertical.brand})}"></head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/nav :: sidebar('clients')}"></div>
+        <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4">
+            <h1 class="h3 mb-4" th:text="${vertical.clientLabel} + (${client.id} != null ? ' を編集' : ' を新規登録')">登録</h1>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form th:action="@{/clients/save}" method="post" th:object="${client}">
+                        <input type="hidden" th:field="*{id}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">氏名 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" th:field="*{name}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">カナ</label>
+                                <input type="text" class="form-control" th:field="*{kana}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">メール</label>
+                                <input type="email" class="form-control" th:field="*{email}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">電話</label>
+                                <input type="text" class="form-control" th:field="*{tel}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">生年月日</label>
+                                <input type="date" class="form-control" th:field="*{birthDate}">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">住所</label>
+                                <input type="text" class="form-control" th:field="*{address}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">職業</label>
+                                <input type="text" class="form-control" th:field="*{occupation}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">担当</label>
+                                <select class="form-select" th:field="*{assignedLawyerId}">
+                                    <option value="">未割当</option>
+                                    <option th:each="u : ${lawyers}" th:value="${u.id}" th:text="${u.name}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">状態</label>
+                                <select class="form-select" th:field="*{status}">
+                                    <option th:each="s : ${T(com.fukunaga.lawyercrm.entity.Client.Status).values()}"
+                                            th:value="${s}" th:text="${s}"></option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">メモ</label>
+                                <textarea class="form-control" rows="3" th:field="*{memo}"></textarea>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button class="btn btn-primary" type="submit">保存</button>
+                            <a class="btn btn-outline-secondary" href="/clients">キャンセル</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

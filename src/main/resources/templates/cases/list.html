@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${vertical.caseLabel} + '一覧 | ' + ${vertical.brand})}"></head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/nav :: sidebar('cases')}"></div>
+        <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0" th:text="${vertical.caseLabel} + '一覧'">案件一覧</h1>
+                <a class="btn btn-primary" href="/cases/new">
+                    <i class="bi bi-plus-lg me-1"></i><span th:text="${vertical.caseLabel} + 'を追加'">追加</span></a>
+            </div>
+            <div th:if="${flash}" class="alert alert-success py-2" th:text="${flash}"></div>
+
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>番号</th><th th:text="${vertical.caseLabel} + '名'">案件名</th>
+                            <th th:text="${vertical.clientLabel}">依頼者</th>
+                            <th>種別</th><th>状態</th><th>裁判所</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="c : ${cases}">
+                            <td class="text-muted small" th:text="${c.caseNumber}">番号</td>
+                            <td><a th:href="@{'/cases/' + ${c.id}}" th:text="${c.caseName}">名</a></td>
+                            <td th:text="${clientMap.get(c.clientId)}">依頼者</td>
+                            <td><span class="badge bg-light text-dark border"
+                                      th:text="${vertical.caseTypeLabel(c.caseType)}">種別</span></td>
+                            <td><span class="badge bg-light text-dark border" th:text="${c.status}">状態</span></td>
+                            <td class="small text-muted" th:text="${c.courtName}">裁判所</td>
+                        </tr>
+                        <tr th:if="${cases.isEmpty()}">
+                            <td colspan="6" class="text-center text-muted py-4">まだ登録がありません。</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${client.name} + ' | ' + ${vertical.brand})}"></head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments/nav :: sidebar('clients')}"></div>
+        <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/clients" th:text="${vertical.clientLabel}">依頼者</a></li>
+                    <li class="breadcrumb-item active" th:text="${client.name}">名前</li>
+                </ol>
+            </nav>
+            <div th:if="${flash}" class="alert alert-success py-2" th:text="${flash}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1 class="h3 mb-0" th:text="${client.name}">名前</h1>
+                <div>
+                    <a class="btn btn-outline-secondary btn-sm" th:href="@{'/clients/' + ${client.id} + '/edit'}">
+                        <i class="bi bi-pencil"></i> 編集</a>
+                    <form class="d-inline" th:action="@{'/clients/' + ${client.id} + '/delete'}" method="post"
+                          onsubmit="return confirm('削除しますか？関連案件も削除されます。');">
+                        <button class="btn btn-outline-danger btn-sm" type="submit"><i class="bi bi-trash"></i> 削除</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-5">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white fw-bold">基本情報</div>
+                        <table class="table mb-0">
+                            <tr><th class="text-muted" style="width:35%">カナ</th><td th:text="${client.kana}"></td></tr>
+                            <tr><th class="text-muted">メール</th><td th:text="${client.email}"></td></tr>
+                            <tr><th class="text-muted">電話</th><td th:text="${client.tel}"></td></tr>
+                            <tr><th class="text-muted">住所</th><td th:text="${client.address}"></td></tr>
+                            <tr><th class="text-muted">職業</th><td th:text="${client.occupation}"></td></tr>
+                            <tr><th class="text-muted">状態</th><td th:text="${client.status}"></td></tr>
+                            <tr><th class="text-muted">メモ</th><td style="white-space:pre-wrap" th:text="${client.memo}"></td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <span class="fw-bold" th:text="${vertical.caseLabel}">案件</span>
+                            <a class="btn btn-sm btn-primary" th:href="@{'/cases/new'(clientId=${client.id})}">
+                                <i class="bi bi-plus-lg"></i> 追加</a>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li th:each="c : ${cases}" class="list-group-item d-flex justify-content-between">
+                                <a th:href="@{'/cases/' + ${c.id}}" th:text="${c.caseName}">案件名</a>
+                                <span class="badge bg-light text-dark border"
+                                      th:text="${vertical.caseTypeLabel(c.caseType)}">種別</span>
+                            </li>
+                            <li th:if="${cases.isEmpty()}" class="list-group-item text-muted">案件はありません。</li>
+                        </ul>
+                    </div>
+
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white fw-bold">活動記録</div>
+                        <div class="card-body">
+                            <form th:action="@{/activities/save}" method="post" class="row g-2 mb-3">
+                                <input type="hidden" name="clientId" th:value="${client.id}">
+                                <div class="col-4">
+                                    <select name="activityType" class="form-select form-select-sm">
+                                        <option value="phone">電話</option>
+                                        <option value="meeting">面談</option>
+                                        <option value="email">メール</option>
+                                        <option value="document">書類</option>
+                                        <option value="court">出廷</option>
+                                        <option value="other">その他</option>
+                                    </select>
+                                </div>
+                                <div class="col-8">
+                                    <input type="datetime-local" name="activityAt" class="form-control form-control-sm" required>
+                                </div>
+                                <div class="col-12">
+                                    <input type="text" name="title" class="form-control form-control-sm" placeholder="件名">
+                                </div>
+                                <div class="col-12">
+                                    <textarea name="content" class="form-control form-control-sm" rows="2" placeholder="内容"></textarea>
+                                </div>
+                                <div class="col-12 text-end">
+                                    <button class="btn btn-sm btn-primary" type="submit">記録を追加</button>
+                                </div>
+                            </form>
+                            <ul class="list-group list-group-flush">
+                                <li th:each="a : ${activities}" class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <span><span class="badge bg-secondary" th:text="${a.activityType}"></span>
+                                            <span th:text="${a.title}"></span></span>
+                                        <span class="text-muted small" th:text="${#temporals.format(a.activityAt, 'yyyy/MM/dd HH:mm')}"></span>
+                                    </div>
+                                    <div class="small text-muted mt-1" style="white-space:pre-wrap" th:text="${a.content}"></div>
+                                </li>
+                                <li th:if="${activities.isEmpty()}" class="list-group-item text-muted">活動記録はありません。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
